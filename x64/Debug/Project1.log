@@ -1,0 +1,27 @@
+﻿  Canny_Filter.cpp
+D:\repos\Project1\Project1\Canny_Filter.h(2,10): fatal  error C1083: Cannot open include file: 'opencv2/core/core.hpp': No such file or directory
+  Channels.cpp
+D:\repos\Project1\Project1\Channels.h(2,10): fatal  error C1083: Cannot open include file: 'opencv2/core/core.hpp': No such file or directory
+  DCT_Transform.cpp
+D:\repos\Project1\Project1\DCT_Transform.h(2,10): fatal  error C1083: Cannot open include file: 'opencv2/core/core.hpp': No such file or directory
+  Equal_His.cpp
+D:\repos\Project1\Project1\Equal_His.h(2,10): fatal  error C1083: Cannot open include file: 'opencv2/core/core.hpp': No such file or directory
+  Gaussian_Filter.cpp
+D:\repos\Project1\Project1\Gaussian_Filter.h(2,10): fatal  error C1083: Cannot open include file: 'opencv2/core/core.hpp': No such file or directory
+  MeanFilter.cpp
+D:\repos\Project1\Project1\MeanFilter.h(2,10): fatal  error C1083: Cannot open include file: 'opencv2/core/core.hpp': No such file or directory
+  MedianFilter.cpp
+D:\repos\Project1\Project1\MedianFilter.h(2,10): fatal  error C1083: Cannot open include file: 'opencv2/core/core.hpp': No such file or directory
+  Remove_Drawing.cpp
+D:\repos\Project1\Project1\Remove_Drawing.h(2,10): fatal  error C1083: Cannot open include file: 'opencv2/core/core.hpp': No such file or directory
+  Segmentation.cpp
+D:\repos\Project1\Project1\Segmentation.h(2,10): fatal  error C1083: Cannot open include file: 'opencv2/core/core.hpp': No such file or directory
+  Sobel_Filter.cpp
+D:\repos\Project1\Project1\Sobel_Filter.h(2,10): fatal  error C1083: Cannot open include file: 'opencv2/core/core.hpp': No such file or directory
+  Source.cpp
+D:\repos\Project1\Project1\Source.cpp(1,10): fatal  error C1083: Cannot open include file: 'opencv2/core/core.hpp': No such file or directory
+  USM.cpp
+D:\repos\Project1\Project1\USM.h(2,10): fatal  error C1083: Cannot open include file: 'opencv2/core/core.hpp': No such file or directory
+  YUV_space.cpp
+D:\repos\Project1\Project1\YUV_space.h(2,10): fatal  error C1083: Cannot open include file: 'opencv2/core/core.hpp': No such file or directory
+  Generating Code...
