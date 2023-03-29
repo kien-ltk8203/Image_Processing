@@ -60,6 +60,9 @@
     <ClCompile Include="Anomaly.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Rotated_Img_Processing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Channels.h">
@@ -102,6 +105,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Anomaly.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rotated_img_Processing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

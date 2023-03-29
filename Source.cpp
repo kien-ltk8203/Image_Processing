@@ -3,6 +3,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <iostream>
+#include <stdio.h>
 #include <vector>
 #include<opencv2/opencv.hpp>
 //#include "Channels.h"
@@ -19,6 +20,12 @@
 //#include "Remove_Drawing.h"
 #include "Serial_Detection.h"
 #include "Anomaly.h"
+#include "Rotated_img_Processing.h"
+#include <opencv2/features2d.hpp>
+#include <opencv2/opencv_modules.hpp>
+#include <opencv2/xfeatures2d/nonfree.hpp>
+#include <opencv2/features2d/features2d.hpp>
+#include <opencv2/xfeatures2d.hpp>
 typedef int ll;
 
 using namespace cv;
@@ -45,78 +52,16 @@ void Display_Histogram(Mat img, string Diagram_Name) {
 	imshow(Diagram_Name, histImage);
 }
 
-void fft(const Mat& src, Mat& dst)
-{
-	// convert to a 32F mat and take log
-	Mat logimg;
-	src.convertTo(logimg, CV_32F);
-	log(logimg + 1, logimg);
-
-	// resize to optimal fft size
-	Mat padded;
-	int m = getOptimalDFTSize(src.rows);
-	int n = getOptimalDFTSize(src.cols);
-	copyMakeBorder(logimg, padded, 0, m - logimg.rows, 0, n - logimg.cols, BORDER_CONSTANT, Scalar::all(0));
-
-	// add imaginary column to mat and apply fft
-	Mat plane[] = { Mat_<float>(padded), Mat::zeros(padded.size(), CV_32F) };
-	Mat imgComplex;
-	merge(plane, 2, imgComplex);
-	dft(imgComplex, dst);
-}
-
-Mat butterworth(const Mat& img, int d0, int n, int high, int low)
-{
-	Mat single(img.rows, img.cols, CV_32F);
-	int cx = img.rows / 2;
-	int cy = img.cols / 2;
-	float upper = high * 0.01;
-	float lower = low * 0.01;
-
-	for (int i = 0; i < img.rows; i++)
-	{
-		for (int j = 0; j < img.cols; j++)
-		{
-			double radius = sqrt(pow(i - cx, 2) + pow(j - cy, 2));
-			single.at<float>(i, j) = ((upper - lower) * (1 / pow(d0 / radius, 2 * n))) + lower;
-		}
+ll is_Original(Mat img, ll x, ll y) {
+	for (ll i = (720 - x) / 2 - 1; i < (720 - x) / 2 + x + 1; i++) {
+		if (img.at<uchar>(i, (720 - y) / 2 - 1) != 0) return 0;
+		if (img.at<uchar>(i, (720 - y) / 2 + y) != 0) return 0;
 	}
-	return single;
-}
-
-Mat homomorphic(Mat src)
-{
-	vector<Mat> hlsimg;
-	Mat tmphls;
-	cvtColor(src, tmphls, COLOR_RGB2HLS);
-	split(tmphls, hlsimg);
-	Mat img = hlsimg[0];
-
-	// apply FFT
-	Mat fftimg;
-	fft(img, fftimg);
-
-	// apply Butterworth HPS
-	Mat filter = butterworth(fftimg, 10, 4, 100, 30);
-	Mat bimg;
-	Mat bchannels[] = { Mat_<float>(filter), Mat::zeros(filter.size(), CV_32F) };
-	merge(bchannels, 2, bimg);
-	mulSpectrums(fftimg, bimg, fftimg, 0);
-
-	// apply inverse FFT
-	Mat ifftimg;
-	idft(fftimg, ifftimg, CV_HAL_DFT_REAL_OUTPUT);
-
-	Mat expimg;
-	exp(ifftimg, expimg);
-
-	Mat final;
-	hlsimg[0] = Mat(expimg, Rect(0, 0, src.cols, src.rows));
-	hlsimg[0].convertTo(hlsimg[0], CV_8U);
-
-	merge(&hlsimg[0], 3, img);
-	cvtColor(img, final, COLOR_HLS2BGR);
-	return final;
+	for (ll j = (720 - y) / 2 - 1; j < (720 - y) / 2 + y + 1; j++) {
+		if (img.at<uchar>((720 - x) / 2 - 1, j) != 0) return 0;
+		if (img.at<uchar>((720 - x) / 2 + x, j) != 0) return 0;
+	}
+	return 1;
 }
 
 int main()
@@ -161,67 +106,143 @@ int main()
 	//imshow("00", O_img);
 	//imshow("11", D_img);
 	//Display_Serial(cop, tmp);
-	Mat img = imread("1.jpg", IMREAD_GRAYSCALE);
-	Mat cop = imread("4.jpg", IMREAD_GRAYSCALE);
-	ll h = img.rows, w = img.cols;
-	Mat tmp = cop.clone();
-	threshold(img, img, 89, 255, THRESH_BINARY);
-	threshold(cop, cop, 50, 255, THRESH_BINARY);
-	for (ll i = 0; i < h; i++) {
-		for (ll j = 0; j < w; j++) {
-			tmp.at<uchar>(i, j) = abs(cop.at<uchar>(i, j) - img.at<uchar>(i, j));
-		}
-	}
-	for (ll i = 1; i < h - 1; i++) {
-		for (ll j = 1; j < w - 1; j++) {
-			if (tmp.at<uchar>(i - 1, j - 1) == 0 && tmp.at<uchar>(i - 1, j) == 0 && tmp.at<uchar>(i - 1, j + 1) == 0 &&
-				tmp.at<uchar>(i, j - 1) == 0 && tmp.at<uchar>(i, j) == 255 && tmp.at<uchar>(i, j + 1) == 0 &&
-				tmp.at<uchar>(i + 1, j - 1) == 0 && tmp.at<uchar>(i + 1, j) == 0 && tmp.at<uchar>(i + 1, j + 1) == 0)
-				tmp.at<uchar>(i, j) = 0;
-		}
-	}
-	for (ll i = 1; i < h - 1; i++) {
-		for (ll j = 1; j < w - 1; j++) {
-			if (tmp.at<uchar>(i - 1, j - 1) == 0 && tmp.at<uchar>(i - 1, j) == 0 && tmp.at<uchar>(i - 1, j + 1) == 0 &&
-				tmp.at<uchar>(i, j - 1) == 0 && tmp.at<uchar>(i, j) == 255 && tmp.at<uchar>(i, j + 1) == 0 &&
-				tmp.at<uchar>(i + 1, j - 1) == 0 && tmp.at<uchar>(i + 1, j) == 0 && tmp.at<uchar>(i + 1, j + 1) == 0)
-				tmp.at<uchar>(i, j) = 0;
-		}
-	}
-	for (ll i = 1; i < h - 1; i++) {
-		for (ll j = 1; j < w - 1; j++) {
-			if (tmp.at<uchar>(i - 1, j - 1) == 0 && tmp.at<uchar>(i - 1, j) == 0 && tmp.at<uchar>(i - 1, j + 1) == 0 &&
-				tmp.at<uchar>(i, j - 1) == 0 && tmp.at<uchar>(i, j) == 255 && tmp.at<uchar>(i, j + 1) == 0 &&
-				tmp.at<uchar>(i + 1, j - 1) == 0 && tmp.at<uchar>(i + 1, j) == 0 && tmp.at<uchar>(i + 1, j + 1) == 0)
-				tmp.at<uchar>(i, j) = 0;
-		}
-	}
-	for (ll i = 1; i < h - 1; i++) {
-		for (ll j = 1; j < w - 1; j++) {
-			if (tmp.at<uchar>(i - 1, j - 1) == 0 && tmp.at<uchar>(i - 1, j) == 0 && tmp.at<uchar>(i - 1, j + 1) == 0 &&
-				tmp.at<uchar>(i, j - 1) == 0 && tmp.at<uchar>(i, j) == 255 && tmp.at<uchar>(i, j + 1) == 0 &&
-				tmp.at<uchar>(i + 1, j - 1) == 0 && tmp.at<uchar>(i + 1, j) == 0 && tmp.at<uchar>(i + 1, j + 1) == 0)
-				tmp.at<uchar>(i, j) = 0;
-		}
-	}
-	imshow("1", img);
-	imshow("2", cop);
-	Mat obj = imread("4.jpg", IMREAD_COLOR);
-	Mat white_img = img.clone();
-	for (ll i = 1; i < h - 1; i++) {
-		for (ll j = 1; j < w - 1; j++) {
-			white_img.at<uchar>(i, j) = 255;
-		}
-	}
-	tmp = Display_Serial(white_img, tmp);
-	tmp = Display_Canny(tmp);
-	imshow("2.5", tmp);
-	Mat matElement = getStructuringElement(MORPH_RECT, Size(1, 1));
-	morphologyEx(tmp, tmp, MORPH_OPEN, matElement);
-	vector<vector<Point>> contours;
-	vector<Vec4i> hierarchy;
-	findContours(tmp, contours, hierarchy, RETR_TREE, CHAIN_APPROX_NONE);
-	drawContours(obj, contours, -1, Scalar(0, 255, 0), 23);
-	imshow("3", obj);
+	/////////////////////////////////////////////////
+
+	//Mat img = imread("1.jpg", IMREAD_GRAYSCALE);
+	//Mat cop = imread("4.jpg", IMREAD_GRAYSCALE);
+	//ll h = img.rows, w = img.cols;
+	//Mat tmp = cop.clone();
+	//threshold(img, img, 89, 255, THRESH_BINARY);
+	//threshold(cop, cop, 50, 255, THRESH_BINARY);
+	//for (ll i = 0; i < h; i++) {
+	//	for (ll j = 0; j < w; j++) {
+	//		tmp.at<uchar>(i, j) = abs(cop.at<uchar>(i, j) - img.at<uchar>(i, j));
+	//	}
+	//}
+	//for (ll i = 1; i < h - 1; i++) {
+	//	for (ll j = 1; j < w - 1; j++) {
+	//		if (tmp.at<uchar>(i - 1, j - 1) == 0 && tmp.at<uchar>(i - 1, j) == 0 && tmp.at<uchar>(i - 1, j + 1) == 0 &&
+	//			tmp.at<uchar>(i, j - 1) == 0 && tmp.at<uchar>(i, j) == 255 && tmp.at<uchar>(i, j + 1) == 0 &&
+	//			tmp.at<uchar>(i + 1, j - 1) == 0 && tmp.at<uchar>(i + 1, j) == 0 && tmp.at<uchar>(i + 1, j + 1) == 0)
+	//			tmp.at<uchar>(i, j) = 0;
+	//	}
+	//}
+	////imshow("1", img);
+	////imshow("2", cop);
+	//Mat obj = imread("4.jpg", IMREAD_COLOR);
+	//Mat white_img = img.clone();
+	//for (ll i = 1; i < h - 1; i++) {
+	//	for (ll j = 1; j < w - 1; j++) {
+	//		white_img.at<uchar>(i, j) = 255;
+	//	}
+	//}
+	//tmp = Display_Serial(white_img, tmp);
+	//tmp = Display_Canny(tmp);
+	////imshow("2.5", tmp);
+	//Mat matElement = getStructuringElement(MORPH_RECT, Size(1, 1));
+	//morphologyEx(tmp, tmp, MORPH_OPEN, matElement);
+	//vector<vector<Point>> contours;
+	//vector<Vec4i> hierarchy;
+	//findContours(tmp, contours, hierarchy, RETR_TREE, CHAIN_APPROX_NONE);
+	//drawContours(obj, contours, -1, Scalar(0, 255, 0), 23);
+	//imshow("3", obj);
+	
+
+	Rotated_Img_Processing();
+	
+
+	//tmp = Display_Serial(white_img, tmp);
+	//tmp = Display_Canny(tmp);
+	////imshow("2.5", tmp);
+	//Mat matElement = getStructuringElement(MORPH_RECT, Size(1, 1));
+	//morphologyEx(tmp, tmp, MORPH_OPEN, matElement);
+	//vector<vector<Point>> contours;
+	//vector<Vec4i> hierarchy;
+	//findContours(tmp, contours, hierarchy, RETR_TREE, CHAIN_APPROX_NONE);
+	//drawContours(obj, contours, -1, Scalar(0, 255, 0), 23);
+	//obj = rotate(obj, 30);
+	//imshow("3", obj);
+	//cout << maxx << " " << angle;
+
+	//-- Step 1: Detect the keypoints using SURF Detector
+	//Mat input1 = imread("1.jpg", IMREAD_GRAYSCALE);
+	//Mat input2 = imread("6.jpg", IMREAD_GRAYSCALE);
+	//ll h = input1.rows, w = input1.cols;
+	//resize(input1, input1, Size(w / 2, h / 2), INTER_LINEAR);
+	//resize(input2, input2, Size(w / 2, h / 2), INTER_LINEAR);
+
+	//Ptr<SiftFeatureDetector> detector1 = SiftFeatureDetector::create(), detector2 = SiftFeatureDetector::create();
+	//vector<KeyPoint> keypoints1, keypoints2;
+	//detector1->detect(input1, keypoints1);
+	//detector2->detect(input2, keypoints2);
+
+	//// Add results to image and save.
+	//Mat output1, output2;
+	//drawKeypoints(input1, keypoints1, output1);
+	//drawKeypoints(input2, keypoints2, output2);
+	//imshow("sift_result1.jpg", output1);
+	//imshow("sift_result2.jpg", output2);
+	//
+	////Step2
+	//Ptr<SiftDescriptorExtractor> extractor = SiftDescriptorExtractor::create();
+	//Mat descriptors_1, descriptors_2;
+	//extractor->compute(input1, keypoints1, descriptors_1);
+	//extractor->compute(input2, keypoints2, descriptors_2);
+	///*BFMatcher matcher(NORM_L2);
+	//vector< DMatch > matches;
+	//matcher.match(descriptors_1, descriptors_2, matches);*/
+
+	////-- Draw matches
+	////Mat img_matches;
+	////drawMatches(input1, keypoints1, input2, keypoints2, matches, img_matches);
+
+	//////-- Show detected matches
+	////imshow("Matches", img_matches);
+
+	////step3
+	//FlannBasedMatcher matcher;
+	//vector< DMatch > matches;
+	//matcher.match(descriptors_1, descriptors_2, matches);
+
+	//double max_dist = 0; double min_dist = 100;
+
+	////-- Quick calculation of max and min distances between keypoints
+	//for (int i = 0; i < descriptors_1.rows; i++)
+	//{
+	//	double dist = matches[i].distance;
+	//	if (dist < min_dist) min_dist = dist;
+	//	if (dist > max_dist) max_dist = dist;
+	//}
+
+	//printf("-- Max dist : %f \n", max_dist);
+	//printf("-- Min dist : %f \n", min_dist);
+
+	////-- Draw only "good" matches (i.e. whose distance is less than 2*min_dist,
+	////-- or a small arbitary value ( 0.02 ) in the event that min_dist is very
+	////-- small)
+	////-- PS.- radiusMatch can also be used here.
+	//std::vector< DMatch > good_matches;
+
+	//for (int i = 0; i < descriptors_1.rows; i++)
+	//{
+	//	if (matches[i].distance <= max(2 * min_dist, 0.02))
+	//	{
+	//		good_matches.push_back(matches[i]);
+	//	}
+	//}
+
+	////-- Draw only "good" matches
+	//Mat img_matches;
+	//drawMatches(input1, keypoints1, input2, keypoints2,
+	//	good_matches, img_matches, Scalar::all(-1), Scalar::all(-1),
+	//	vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+
+	////-- Show detected matches
+	//imshow("Good Matches", img_matches);
+
+	//for (int i = 0; i < (int)good_matches.size(); i++)
+	//{
+	//	printf("-- Good Match [%d] Keypoint 1: %d  -- Keypoint 2: %d  \n", i, good_matches[i].queryIdx, good_matches[i].trainIdx);
+	//}
 	waitKey(0);
 }

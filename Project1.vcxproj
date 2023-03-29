@@ -70,6 +70,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>D:\OpenCv_2\install\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\OpenCv_2\install\x64\vc17\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -139,6 +143,7 @@
     <ClCompile Include="MeanFilter.cpp" />
     <ClCompile Include="MedianFilter.cpp" />
     <ClCompile Include="Remove_Drawing.cpp" />
+    <ClCompile Include="Rotated_Img_Processing.cpp" />
     <ClCompile Include="Segmentation.cpp" />
     <ClCompile Include="Serial_Detection.cpp" />
     <ClCompile Include="Sobel_Filter.cpp" />
@@ -156,6 +161,7 @@
     <ClInclude Include="MeanFilter.h" />
     <ClInclude Include="MedianFilter.h" />
     <ClInclude Include="Remove_Drawing.h" />
+    <ClInclude Include="Rotated_img_Processing.h" />
     <ClInclude Include="Segmentation.h" />
     <ClInclude Include="Serial_Detection.h" />
     <ClInclude Include="Sobel_Filter.h" />
