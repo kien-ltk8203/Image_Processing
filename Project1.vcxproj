@@ -138,6 +138,7 @@
     <ClCompile Include="Canny_Filter.cpp" />
     <ClCompile Include="Channels.cpp" />
     <ClCompile Include="DCT_Transform.cpp" />
+    <ClCompile Include="Different_Images.cpp" />
     <ClCompile Include="Equal_His.cpp" />
     <ClCompile Include="Gaussian_Filter.cpp" />
     <ClCompile Include="MeanFilter.cpp" />
@@ -146,8 +147,10 @@
     <ClCompile Include="Rotated_Img_Processing.cpp" />
     <ClCompile Include="Segmentation.cpp" />
     <ClCompile Include="Serial_Detection.cpp" />
+    <ClCompile Include="Serial_Different_Processing.cpp" />
     <ClCompile Include="Sobel_Filter.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Two_Same_Images.cpp" />
     <ClCompile Include="USM.cpp" />
     <ClCompile Include="YUV_space.cpp" />
   </ItemGroup>
@@ -156,6 +159,7 @@
     <ClInclude Include="Canny_Filter.h" />
     <ClInclude Include="Channels.h" />
     <ClInclude Include="DCT_Transform.h" />
+    <ClInclude Include="Different_Images.h" />
     <ClInclude Include="Equal_His.h" />
     <ClInclude Include="Gaussian_Filter.h" />
     <ClInclude Include="MeanFilter.h" />
@@ -164,7 +168,9 @@
     <ClInclude Include="Rotated_img_Processing.h" />
     <ClInclude Include="Segmentation.h" />
     <ClInclude Include="Serial_Detection.h" />
+    <ClInclude Include="Serial_Different_Processing.h" />
     <ClInclude Include="Sobel_Filter.h" />
+    <ClInclude Include="Two_Same_Images.h" />
     <ClInclude Include="USM.h" />
     <ClInclude Include="YUV_space.h" />
   </ItemGroup>

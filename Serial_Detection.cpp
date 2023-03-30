@@ -19,7 +19,7 @@ Mat Display_Serial(Mat img, Mat cop) {
 	findContours(cop, contours, hierarchy, RETR_TREE, CHAIN_APPROX_NONE);
 
 	// draw contours on the original image
-	drawContours(img, contours, -1, Scalar(0, 255, 0), 30);
+	drawContours(img, contours, -1, Scalar(0, 255, 0), 23);
 	//imshow("None approximation", img);
 	return img;
 	waitKey(0);

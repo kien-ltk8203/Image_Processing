@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <vector>
+#include <map>
 #include<opencv2/opencv.hpp>
 //#include "Channels.h"
 //#include "YUV_space.h"
@@ -21,6 +22,9 @@
 #include "Serial_Detection.h"
 #include "Anomaly.h"
 #include "Rotated_img_Processing.h"
+#include "Two_Same_Images.h"
+#include "Different_Images.h"
+#include "Serial_Different_Processing.h"
 #include <opencv2/features2d.hpp>
 #include <opencv2/opencv_modules.hpp>
 #include <opencv2/xfeatures2d/nonfree.hpp>
@@ -66,6 +70,39 @@ ll is_Original(Mat img, ll x, ll y) {
 
 int main()
 {
+	//Diff_Img_Processing();
+	//Same_Img_Processing();
+	//Rotated_Img_Processing();
+	Serial_Diff_Processing();
+	
+	//cop = Equalize_Hist_Red(cop);
+	//for (ll i = 0; i < h; i++) {
+	//	for (ll j = 0; j < w; j++) {
+	//		if (cnt[cop.at<uchar>(i, j)] == 0) tmp.at<uchar>(i, j) = cop.at<uchar>(i, j);
+	//	}
+	//}
+	//threshold(tmp, tmp, 127, 255, THRESH_BINARY);
+	//for (ll i = 0; i < h; i++) {
+	//	for (ll j = 0; j < w; j++) {
+	//		if (tmp.at<uchar>(i, j) == 0) tmp.at<uchar>(i, j) = 255;
+	//		else tmp.at<uchar>(i, j) = 0;
+	//	}
+	//}
+	//Mat matElement = getStructuringElement(MORPH_RECT, Size(5, 1));
+	//morphologyEx(tmp, tmp, MORPH_ERODE, matElement);
+	//vector<vector<Point>> contours;
+	//vector<Vec4i> hierarchy;
+	//findContours(tmp, contours, hierarchy, RETR_TREE, CHAIN_APPROX_NONE);
+
+	//// draw contours on the original image
+	//drawContours(v, contours, -1, Scalar(0, 255, 0), 3);
+	////threshold(cop, cop, 254, 255, THRESH_BINARY);
+	////tmp = Display_Serial(v, tmp);
+	////tmp = Display_Canny(tmp);
+	////tmp = Display_Serial(v, tmp);
+	//imshow("hash", v);
+	 
+	////////////
 	////Display_After_Removing_Drawing();
 	////ll d = 0;
 	////Mat O_img = imread("1.jpg", IMREAD_COLOR);
@@ -108,62 +145,7 @@ int main()
 	//Display_Serial(cop, tmp);
 	/////////////////////////////////////////////////
 
-	//Mat img = imread("1.jpg", IMREAD_GRAYSCALE);
-	//Mat cop = imread("4.jpg", IMREAD_GRAYSCALE);
-	//ll h = img.rows, w = img.cols;
-	//Mat tmp = cop.clone();
-	//threshold(img, img, 89, 255, THRESH_BINARY);
-	//threshold(cop, cop, 50, 255, THRESH_BINARY);
-	//for (ll i = 0; i < h; i++) {
-	//	for (ll j = 0; j < w; j++) {
-	//		tmp.at<uchar>(i, j) = abs(cop.at<uchar>(i, j) - img.at<uchar>(i, j));
-	//	}
-	//}
-	//for (ll i = 1; i < h - 1; i++) {
-	//	for (ll j = 1; j < w - 1; j++) {
-	//		if (tmp.at<uchar>(i - 1, j - 1) == 0 && tmp.at<uchar>(i - 1, j) == 0 && tmp.at<uchar>(i - 1, j + 1) == 0 &&
-	//			tmp.at<uchar>(i, j - 1) == 0 && tmp.at<uchar>(i, j) == 255 && tmp.at<uchar>(i, j + 1) == 0 &&
-	//			tmp.at<uchar>(i + 1, j - 1) == 0 && tmp.at<uchar>(i + 1, j) == 0 && tmp.at<uchar>(i + 1, j + 1) == 0)
-	//			tmp.at<uchar>(i, j) = 0;
-	//	}
-	//}
-	////imshow("1", img);
-	////imshow("2", cop);
-	//Mat obj = imread("4.jpg", IMREAD_COLOR);
-	//Mat white_img = img.clone();
-	//for (ll i = 1; i < h - 1; i++) {
-	//	for (ll j = 1; j < w - 1; j++) {
-	//		white_img.at<uchar>(i, j) = 255;
-	//	}
-	//}
-	//tmp = Display_Serial(white_img, tmp);
-	//tmp = Display_Canny(tmp);
-	////imshow("2.5", tmp);
-	//Mat matElement = getStructuringElement(MORPH_RECT, Size(1, 1));
-	//morphologyEx(tmp, tmp, MORPH_OPEN, matElement);
-	//vector<vector<Point>> contours;
-	//vector<Vec4i> hierarchy;
-	//findContours(tmp, contours, hierarchy, RETR_TREE, CHAIN_APPROX_NONE);
-	//drawContours(obj, contours, -1, Scalar(0, 255, 0), 23);
-	//imshow("3", obj);
-	
-
-	Rotated_Img_Processing();
-	
-
-	//tmp = Display_Serial(white_img, tmp);
-	//tmp = Display_Canny(tmp);
-	////imshow("2.5", tmp);
-	//Mat matElement = getStructuringElement(MORPH_RECT, Size(1, 1));
-	//morphologyEx(tmp, tmp, MORPH_OPEN, matElement);
-	//vector<vector<Point>> contours;
-	//vector<Vec4i> hierarchy;
-	//findContours(tmp, contours, hierarchy, RETR_TREE, CHAIN_APPROX_NONE);
-	//drawContours(obj, contours, -1, Scalar(0, 255, 0), 23);
-	//obj = rotate(obj, 30);
-	//imshow("3", obj);
-	//cout << maxx << " " << angle;
-
+	//SIFT algorithm
 	//-- Step 1: Detect the keypoints using SURF Detector
 	//Mat input1 = imread("1.jpg", IMREAD_GRAYSCALE);
 	//Mat input2 = imread("6.jpg", IMREAD_GRAYSCALE);
